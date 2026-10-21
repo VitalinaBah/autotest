@@ -58,3 +58,24 @@ export function calcOrderTotal(
   const afterDiscount = round2(subtotal * (1 - rate));
   return round2(afterDiscount + calcShipping(afterDiscount));
 }
+
+/**
+ * Варіант 4. Знижка за кількістю одиниць товару.
+ *   1–9 одиниць   → 0 %
+ *   10–49 одиниць → 3 %
+ *   від 50        → 7 %
+ * Кількість має бути цілим додатним числом, інакше INVALID_BULK_QTY.
+ */
+export const BULK_TIER_1_FROM = 10;
+export const BULK_TIER_2_FROM = 50;
+export const BULK_TIER_1_RATE = 0.03;
+export const BULK_TIER_2_RATE = 0.07;
+
+export function calcBulkDiscount(qty: number): number {
+  if (!Number.isInteger(qty) || qty <= 0) {
+    throw new Error('INVALID_BULK_QTY');
+  }
+  if (qty >= BULK_TIER_2_FROM) return BULK_TIER_2_RATE;
+  if (qty >= BULK_TIER_1_FROM) return BULK_TIER_1_RATE;
+  return 0;
+}
