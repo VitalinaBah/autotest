@@ -38,4 +38,20 @@ describe('calcTaxiFare', () => {
       expect(calcTaxiFare(km, { night })).toBe(expected);
     },
   );
+
+  it.each([
+    { km: 0, night: false, expected: 80 },
+    { km: 3, night: false, expected: 80 },
+    { km: 6, night: false, expected: 80 },
+    { km: 6.01, night: false, expected: 88 },
+    { km: 7, night: false, expected: 88 },
+    { km: 3, night: true, expected: 80 },
+    { km: 5, night: true, expected: 80 },
+    { km: 5.01, night: true, expected: 95 },
+  ])(
+    'мінімальна поїздка 80 грн: $km км, night=$night → $expected',
+    ({ km, night, expected }) => {
+      expect(calcTaxiFare(km, { night })).toBe(expected);
+    },
+  );
 });
