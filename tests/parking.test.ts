@@ -52,4 +52,11 @@ describe('calcParkingFee', () => {
   ])('вихідний: $minutes $opts → $expected', ({ minutes, opts, expected }) => {
     expect(calcParkingFee(minutes, opts)).toBeCloseTo(expected, 2);
   });
+
+  it('заокруглює результат до копійок', () => {
+    // 45 хв, ніч, вихідний: 30 / 2 * 0.8 = 12 (без заокруглення 12.000000000000002)
+    expect(calcParkingFee(45, { night: true, weekend: true })).toBe(12);
+    // 121 хв, ніч, вихідний: 70 / 2 * 0.8 = 28
+    expect(calcParkingFee(121, { night: true, weekend: true })).toBe(28);
+  });
 });
