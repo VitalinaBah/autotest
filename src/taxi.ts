@@ -13,6 +13,9 @@ export function calcTaxiFare(
   if (!Number.isFinite(distanceKm) || distanceKm < 0) {
     throw new Error('INVALID_DISTANCE');
   }
-  if (distanceKm <= INCLUDED_KM) return BOARDING_FEE;
-  return BOARDING_FEE + (distanceKm - INCLUDED_KM) * PRICE_PER_KM;
+  const fare =
+    distanceKm <= INCLUDED_KM
+      ? BOARDING_FEE
+      : BOARDING_FEE + (distanceKm - INCLUDED_KM) * PRICE_PER_KM;
+  return Math.round(fare * 100) / 100;
 }
