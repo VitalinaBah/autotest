@@ -15,9 +15,15 @@ export function calcParkingFee(
   if (!Number.isInteger(minutes) || minutes < 0) {
     throw new Error('INVALID_DURATION');
   }
-  if (minutes <= FREE_MINUTES) return 0;
-  if (minutes <= 60) return FIRST_HOUR_FEE;
-  const extraHours = Math.ceil((minutes - 60) / 60);
-  const fee = FIRST_HOUR_FEE + extraHours * EXTRA_HOUR_FEE;
-  return Math.min(fee, DAILY_CAP);
+  let fee: number;
+  if (minutes <= FREE_MINUTES) {
+    fee = 0;
+  } else if (minutes <= 60) {
+    fee = FIRST_HOUR_FEE;
+  } else {
+    const extraHours = Math.ceil((minutes - 60) / 60);
+    fee = Math.min(FIRST_HOUR_FEE + extraHours * EXTRA_HOUR_FEE, DAILY_CAP);
+  }
+  if (options.night) fee = fee / 2;
+  return fee;
 }
