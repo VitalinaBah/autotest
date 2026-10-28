@@ -5,24 +5,41 @@ export interface ParkingOptions {
 
 const FREE_MINUTES = 15;
 const FIRST_HOUR_MINUTES = 60;
+const MINUTES_PER_HOUR = 60;
 const FIRST_HOUR_FEE = 30;
 const EXTRA_HOUR_FEE = 20;
 const DAILY_CAP = 200;
+const NIGHT_RATE = 0.5;
+const WEEKEND_RATE = 0.8;
+
+const round2 = (n: number): number => Math.round(n * 100) / 100;
+
+function assertValidDuration(minutes: number): void {
+  if (!Number.isInteger(minutes) || minutes < 0) {
+    throw new Error('INVALID_DURATION');
+  }
+}
+
+export function calcBaseFee(minutes: number): number {
+  if (minutes <= FREE_MINUTES) return 0;
+  if (minutes <= FIRST_HOUR_MINUTES) return FIRST_HOUR_FEE;
+  const extraHours = Math.ceil(
+    (minutes - FIRST_HOUR_MINUTES) / MINUTES_PER_HOUR,
+  );
+  return Math.min(FIRST_HOUR_FEE + extraHours * EXTRA_HOUR_FEE, DAILY_CAP);
+}
+
+export function applyRates(fee: number, options: ParkingOptions): number {
+  let result = fee;
+  if (options.night) result *= NIGHT_RATE;
+  if (options.weekend) result *= WEEKEND_RATE;
+  return result;
+}
 
 export function calcParkingFee(
   minutes: number,
   options: ParkingOptions = {},
 ): number {
-  if (!Number.isInteger(minutes) || minutes < 0) {
-    throw new Error('INVALID_DURATION');
-  }
-  if (minutes <= FREE_MINUTES) return 0;
-  let fee = FIRST_HOUR_FEE;
-  if (minutes > FIRST_HOUR_MINUTES) {
-    const extraHours = Math.ceil((minutes - FIRST_HOUR_MINUTES) / 60);
-    fee = Math.min(FIRST_HOUR_FEE + extraHours * EXTRA_HOUR_FEE, DAILY_CAP);
-  }
-  if (options.night) fee = fee / 2;
-  if (options.weekend) fee = fee * 0.8;
-  return fee;
+  assertValidDuration(minutes);
+  return round2(applyRates(calcBaseFee(minutes), options));
 }
