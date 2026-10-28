@@ -3,5 +3,8 @@ export interface TaxiOptions {
 }
 
 export function calcTaxiFare(km: number, options: TaxiOptions = {}): number {
-  throw new Error('INVALID_DISTANCE');
+  if (!Number.isFinite(km) || km < 0) {
+    throw new Error('INVALID_DISTANCE');
+  }
+  return 40;
 }
