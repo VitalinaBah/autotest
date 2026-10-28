@@ -39,3 +39,17 @@ describe('заокруглення', () => {
     expect(calcTaxiFare(3.3)).toBe(43.6);
   });
 });
+
+describe('нічна надбавка', () => {
+  it.each([
+    { km: 7.5, expected: 117.5 },
+    { km: 10, expected: 155 },
+    { km: 15, expected: 230 },
+  ])('вночі $km км коштує $expected грн', ({ km, expected }) => {
+    expect(calcTaxiFare(km, { night: true })).toBe(expected);
+  });
+
+  it('без прапорця night надбавка не застосовується', () => {
+    expect(calcTaxiFare(10, { night: false })).toBe(124);
+  });
+});
