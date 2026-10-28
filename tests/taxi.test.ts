@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calcTaxiFare } from '../src/taxi';
+import { calcDistanceFare, calcTaxiFare } from '../src/taxi';
 
 describe('некоректна відстань', () => {
   it.each([-1, -0.1, NaN, Infinity])('відхиляє відстань %s', (km) => {
@@ -7,19 +7,19 @@ describe('некоректна відстань', () => {
   });
 });
 
-describe('посадка', () => {
+describe('calcDistanceFare: посадка', () => {
   it.each([0, 1, 3])('поїздка на %s км коштує лише посадку 40 грн', (km) => {
-    expect(calcTaxiFare(km)).toBe(40);
+    expect(calcDistanceFare(km)).toBe(40);
   });
 });
 
-describe('кілометраж понад 3 км', () => {
+describe('calcDistanceFare: кілометраж понад 3 км', () => {
   it.each([
     { km: 2.9, expected: 40 },
     { km: 3, expected: 40 },
     { km: 3.1, expected: 41.2 },
   ])('межа включених 3 км: $km км → $expected грн', ({ km, expected }) => {
-    expect(calcTaxiFare(km)).toBeCloseTo(expected, 2);
+    expect(calcDistanceFare(km)).toBeCloseTo(expected, 2);
   });
 
   it.each([
@@ -28,15 +28,15 @@ describe('кілометраж понад 3 км', () => {
   ])(
     'кожен км понад 3 коштує 12 грн: $km км → $expected грн',
     ({ km, expected }) => {
-      expect(calcTaxiFare(km)).toBe(expected);
+      expect(calcDistanceFare(km)).toBe(expected);
     },
   );
 });
 
-describe('заокруглення', () => {
+describe('calcDistanceFare: заокруглення', () => {
   it('заокруглює вартість до копійок', () => {
     // 40 + 12 × 0,3 = 43,60
-    expect(calcTaxiFare(3.3)).toBe(43.6);
+    expect(calcDistanceFare(3.3)).toBe(43.6);
   });
 });
 
