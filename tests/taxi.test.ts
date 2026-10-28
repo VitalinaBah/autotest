@@ -26,4 +26,16 @@ describe('calcTaxiFare', () => {
       expect(calcTaxiFare(km)).toBe(expected);
     },
   );
+
+  it.each([
+    { km: 6, night: true, expected: 95 },
+    { km: 7, night: true, expected: 110 },
+    { km: 10, night: true, expected: 155 },
+    { km: 10, night: false, expected: 124 },
+  ])(
+    'нічна надбавка 25 %: $km км, night=$night → $expected',
+    ({ km, night, expected }) => {
+      expect(calcTaxiFare(km, { night })).toBe(expected);
+    },
+  );
 });
