@@ -33,7 +33,7 @@ describe('calcTaxiFare', () => {
     { km: 10, night: true, expected: 155 },
     { km: 10, night: false, expected: 124 },
   ])(
-    'нічна надбавка 25 %: $km км, night=$night → $expected',
+    'нічна надбавка ×1.25: $km км, night=$night → $expected',
     ({ km, night, expected }) => {
       expect(calcTaxiFare(km, { night })).toBe(expected);
     },
