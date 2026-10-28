@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calcTaxiFare } from '../src/taxi';
+import { calcBaseFare, calcTaxiFare } from '../src/taxi';
 
 describe('calcTaxiFare', () => {
   it.each([-1, -0.1, NaN, Infinity])('відхиляє відстань %s', (km) => {
@@ -9,7 +9,7 @@ describe('calcTaxiFare', () => {
   it.each([0, 1, 2.5, 3])(
     'посадка 40 грн, перші 3 км включено: %s км',
     (km) => {
-      expect(calcTaxiFare(km)).toBe(40);
+      expect(calcBaseFare(km)).toBe(40);
     },
   );
 
@@ -23,7 +23,7 @@ describe('calcTaxiFare', () => {
   ])(
     'понад 3 км – 12 грн за кожен розпочатий км: $km → $expected',
     ({ km, expected }) => {
-      expect(calcTaxiFare(km)).toBe(expected);
+      expect(calcBaseFare(km)).toBe(expected);
     },
   );
 

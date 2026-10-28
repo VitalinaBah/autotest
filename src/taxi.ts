@@ -5,16 +5,24 @@ export interface TaxiOptions {
 const BOARDING_FEE = 40;
 const INCLUDED_KM = 3;
 const PRICE_PER_KM = 12;
+const NIGHT_SURCHARGE_RATE = 1.25;
+
+export function calcBaseFare(km: number): number {
+  if (km <= INCLUDED_KM) return BOARDING_FEE;
+  const extraKm = Math.ceil(km - INCLUDED_KM);
+  return BOARDING_FEE + extraKm * PRICE_PER_KM;
+}
+
+export function applyNightSurcharge(
+  fare: number,
+  options: TaxiOptions,
+): number {
+  return options.night ? fare * NIGHT_SURCHARGE_RATE : fare;
+}
 
 export function calcTaxiFare(km: number, options: TaxiOptions = {}): number {
   if (!Number.isFinite(km) || km < 0) {
     throw new Error('INVALID_DISTANCE');
   }
-  let fare = BOARDING_FEE;
-  if (km > INCLUDED_KM) {
-    const extraKm = Math.ceil(km - INCLUDED_KM);
-    fare = BOARDING_FEE + extraKm * PRICE_PER_KM;
-  }
-  if (options.night) fare = fare * 1.25;
-  return fare;
+  return applyNightSurcharge(calcBaseFare(km), options);
 }
