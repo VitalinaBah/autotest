@@ -16,3 +16,12 @@ it.each([
 ])('тривалість $minutes → $expected', ({ minutes, expected }) => {
   expect(calcParkingFee(minutes)).toBe(expected);
 });
+
+it.each([
+  { minutes: 61, expected: 50 },
+  { minutes: 120, expected: 50 },
+  { minutes: 121, expected: 70 },
+  { minutes: 180, expected: 70 },
+])('тривалість $minutes → $expected', ({ minutes, expected }) => {
+  expect(calcParkingFee(minutes)).toBe(expected);
+});
