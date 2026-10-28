@@ -2,11 +2,15 @@ export interface TaxiOptions {
   night?: boolean;
 }
 
+const BOARDING_FEE = 40;
+const INCLUDED_KM = 3;
+const PRICE_PER_KM = 12;
+
 export function calcTaxiFare(km: number, options: TaxiOptions = {}): number {
   if (!Number.isFinite(km) || km < 0) {
     throw new Error('INVALID_DISTANCE');
   }
-  if (km <= 3) return 40;
-  const extraKm = Math.ceil(km - 3);
-  return 40 + extraKm * 12;
+  if (km <= INCLUDED_KM) return BOARDING_FEE;
+  const extraKm = Math.ceil(km - INCLUDED_KM);
+  return BOARDING_FEE + extraKm * PRICE_PER_KM;
 }
