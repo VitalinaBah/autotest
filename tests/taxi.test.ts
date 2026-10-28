@@ -6,3 +6,9 @@ describe('некоректна відстань', () => {
     expect(() => calcTaxiFare(km)).toThrow('INVALID_DISTANCE');
   });
 });
+
+describe('посадка', () => {
+  it.each([0, 1, 3])('поїздка на %s км коштує лише посадку 40 грн', (km) => {
+    expect(calcTaxiFare(km)).toBe(40);
+  });
+});
