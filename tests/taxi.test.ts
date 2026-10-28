@@ -12,3 +12,23 @@ describe('посадка', () => {
     expect(calcTaxiFare(km)).toBe(40);
   });
 });
+
+describe('кілометраж понад 3 км', () => {
+  it.each([
+    { km: 2.9, expected: 40 },
+    { km: 3, expected: 40 },
+    { km: 3.1, expected: 41.2 },
+  ])('межа включених 3 км: $km км → $expected грн', ({ km, expected }) => {
+    expect(calcTaxiFare(km)).toBeCloseTo(expected, 2);
+  });
+
+  it.each([
+    { km: 4, expected: 52 },
+    { km: 10, expected: 124 },
+  ])(
+    'кожен км понад 3 коштує 12 грн: $km км → $expected грн',
+    ({ km, expected }) => {
+      expect(calcTaxiFare(km)).toBe(expected);
+    },
+  );
+});
