@@ -9,6 +9,7 @@ const NIGHT_SURCHARGE_RATE = 1.25;
 const MIN_FARE = 80;
 
 export function calcBaseFare(km: number): number {
+  km = Math.round(km * 1000) / 1000;
   if (km <= INCLUDED_KM) return BOARDING_FEE;
   const extraKm = Math.ceil(km - INCLUDED_KM);
   return BOARDING_FEE + extraKm * PRICE_PER_KM;
