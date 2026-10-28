@@ -53,3 +53,38 @@ describe('нічна надбавка', () => {
     expect(calcTaxiFare(10, { night: false })).toBe(124);
   });
 });
+
+describe('мінімальна вартість поїздки', () => {
+  it.each([
+    { km: 0, expected: 80 },
+    { km: 3, expected: 80 },
+    { km: 5, expected: 80 },
+  ])(
+    'коротка поїздка $km км коштує мінімум $expected грн',
+    ({ km, expected }) => {
+      expect(calcTaxiFare(km)).toBe(expected);
+    },
+  );
+
+  it.each([
+    { km: 6.33, expected: 80 },
+    { km: 6.34, expected: 80.08 },
+    { km: 7, expected: 88 },
+  ])(
+    'межа мінімальної вартості вдень: $km км → $expected грн',
+    ({ km, expected }) => {
+      expect(calcTaxiFare(km)).toBe(expected);
+    },
+  );
+
+  it.each([
+    { km: 4.9, expected: 80 },
+    { km: 5, expected: 80 },
+    { km: 5.1, expected: 81.5 },
+  ])(
+    'межа мінімальної вартості вночі: $km км → $expected грн',
+    ({ km, expected }) => {
+      expect(calcTaxiFare(km, { night: true })).toBe(expected);
+    },
+  );
+});
