@@ -23,5 +23,5 @@ export function calcTaxiFare(
 ): number {
   let fare = calcDistanceFare(distanceKm);
   if (options.night) fare = fare * NIGHT_SURCHARGE;
-  return round2(fare);
+  return round2(Math.max(fare, 80));
 }
