@@ -12,4 +12,18 @@ describe('calcTaxiFare', () => {
       expect(calcTaxiFare(km)).toBe(40);
     },
   );
+
+  it.each([
+    { km: 3, expected: 40 },
+    { km: 3.1, expected: 52 },
+    { km: 4, expected: 52 },
+    { km: 4.01, expected: 64 },
+    { km: 5, expected: 64 },
+    { km: 10, expected: 124 },
+  ])(
+    'понад 3 км – 12 грн за кожен розпочатий км: $km → $expected',
+    ({ km, expected }) => {
+      expect(calcTaxiFare(km)).toBe(expected);
+    },
+  );
 });
