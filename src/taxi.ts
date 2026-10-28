@@ -9,5 +9,6 @@ export function calcTaxiFare(
   if (!Number.isFinite(distanceKm) || distanceKm < 0) {
     throw new Error('INVALID_DISTANCE');
   }
-  return 40;
+  if (distanceKm <= 3) return 40;
+  return 40 + (distanceKm - 3) * 12;
 }
