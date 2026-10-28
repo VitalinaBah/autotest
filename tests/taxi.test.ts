@@ -54,4 +54,13 @@ describe('calcTaxiFare', () => {
       expect(calcTaxiFare(km, { night })).toBe(expected);
     },
   );
+
+  it.each([
+    { km: 0.1 + 2.7 + 0.2, expected: 40 }, // = 3.0000000000000004
+    { km: 3.0004, expected: 40 },
+    { km: 3.0005, expected: 52 },
+    { km: 3.001, expected: 52 },
+  ])('відстань округлюється до метра: $km → $expected', ({ km, expected }) => {
+    expect(calcBaseFare(km)).toBe(expected);
+  });
 });
