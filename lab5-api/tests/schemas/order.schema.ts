@@ -4,8 +4,10 @@ export const orderSchema = {
     id: { type: 'string', minLength: 1 },
     tier: { type: 'string', enum: ['basic', 'silver', 'gold'] },
     subtotal: { type: 'number', minimum: 0 },
+    discountRate: { type: 'number', minimum: 0, maximum: 0.25 },
     total: { type: 'number', minimum: 0 },
     createdAt: { type: 'string', format: 'date-time' },
+    promoCode: { type: 'string', enum: ['SAVE5', 'SAVE10', 'MEGA20'] },
     items: {
       type: 'array',
       minItems: 1,
@@ -21,6 +23,14 @@ export const orderSchema = {
       },
     },
   },
-  required: ['id', 'tier', 'subtotal', 'total', 'createdAt', 'items'],
+  required: [
+    'id',
+    'tier',
+    'subtotal',
+    'discountRate',
+    'total',
+    'createdAt',
+    'items',
+  ],
   additionalProperties: false,
 } as const;
