@@ -1,0 +1,356 @@
+{
+  "info": {
+    "_postman_id": "6f1c2a4e-5b7d-4c1e-9a3f-2d8e7b6c5a41",
+    "name": "Orders API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Частина 1",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('token', pm.response.json().accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"bob@example.com\",\n  \"password\": \"Secret123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 201', () => pm.response.to.have.status(201));",
+                  "pm.test('сума з доставкою', () => {",
+                  "  pm.expect(pm.response.json().total).to.eql(560);",
+                  "});",
+                  "pm.collectionVariables.set('orderId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"sku\": \"SKU-A\",\n      \"price\": 500,\n      \"qty\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 200', () => pm.response.to.have.status(200));",
+                  "pm.test('повертає створене замовлення', () => {",
+                  "  pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('orderId'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Частина 2. Промокоди (варіант 4)",
+      "item": [
+        {
+          "name": "Create order with promo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Location вказує на нове замовлення', () => {",
+                  "  pm.expect(pm.response.headers.get('Location')).to.eql('/orders/' + pm.response.json().id);",
+                  "});",
+                  "pm.test('знижка 10 %: 500 − 50 + 60 доставка = 510', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.promoCode).to.eql('SAVE10');",
+                  "  pm.expect(body.discountRate).to.eql(0.1);",
+                  "  pm.expect(body.total).to.eql(510);",
+                  "});",
+                  "pm.collectionVariables.set('promoOrderId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"sku\": \"SKU-A\",\n      \"price\": 500,\n      \"qty\": 1\n    }\n  ],\n  \"promoCode\": \"SAVE10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get promo order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 200', () => pm.response.to.have.status(200));",
+                  "pm.test('замовлення збережено з промокодом', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.promoCode).to.eql('SAVE10');",
+                  "  pm.expect(body.total).to.eql(510);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{promoOrderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{promoOrderId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create order with unknown promo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 422', () => pm.response.to.have.status(422));",
+                  "pm.test('код помилки UNKNOWN_PROMO_CODE', () => {",
+                  "  pm.expect(pm.response.json()).to.eql({ code: 'UNKNOWN_PROMO_CODE' });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"sku\": \"SKU-A\",\n      \"price\": 500,\n      \"qty\": 1\n    }\n  ],\n  \"promoCode\": \"NOPE99\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create order with capped discount",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('статус 201', () => pm.response.to.have.status(201));",
+                  "pm.test('знижка обмежена 25 %: 2000 × 0,75 = 1500', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.discountRate).to.eql(0.25);",
+                  "  pm.expect(body.total).to.eql(1500);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"sku\": \"SKU-B\",\n      \"price\": 1000,\n      \"qty\": 2\n    }\n  ],\n  \"promoCode\": \"MEGA20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "promoOrderId",
+      "value": ""
+    }
+  ]
+}

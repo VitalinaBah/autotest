@@ -1,0 +1,6 @@
+export const errorSchema = {
+  type: 'object',
+  properties: { code: { type: 'string', minLength: 1 } },
+  required: ['code'],
+  additionalProperties: false,
+} as const;
